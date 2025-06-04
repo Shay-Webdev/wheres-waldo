@@ -72,3 +72,10 @@ a {
 }
 
 /* Style starts here */
+
+@layer base {
+  a,
+  button {
+    cursor: pointer;
+  }
+}
