@@ -1,6 +1,6 @@
+import { Outlet } from "react-router-dom";
 import Footer from "../Components/Footer/Footer";
 import Header from "../Components/Headers/Header";
-import GameContainer from "../Features/HomePage/Components/GameCardContainer/GameContainer";
 import "./App.css";
 
 function App() {
@@ -9,7 +9,7 @@ function App() {
       <main className="flex flex-col min-h-screen bg-zinc-900 ">
         <Header />
         <section className="grow">
-          <GameContainer />
+          <Outlet />
         </section>
         <Footer />
       </main>

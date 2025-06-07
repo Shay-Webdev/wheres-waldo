@@ -1,13 +1,6 @@
 import { useNavigate } from "react-router-dom";
-import { z } from "zod";
+import type { CardProps } from "../../Types/types";
 
-const cardSchema = z.object({
-  imgURL: z.union([z.string().url(), z.string()]),
-  imgName: z.string(),
-  gameId: z.number(),
-});
-
-type CardProps = z.infer<typeof cardSchema>;
 const Card = (props: CardProps) => {
   const { imgName, imgURL, gameId } = props;
   const navigate = useNavigate();

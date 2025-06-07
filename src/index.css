@@ -79,3 +79,14 @@ a {
     cursor: pointer;
   }
 }
+
+@layer components {
+  .button {
+    border: none;
+    border-radius: var(--radius-md);
+    background-color: var(--color-fuchsia-900);
+    transition: all 0.1s ease;
+    font-weight: bold;
+    max-width: 4em;
+  }
+}
