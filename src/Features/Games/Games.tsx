@@ -17,9 +17,15 @@ const Games = () => {
     const viewportY = e.clientY;
     const docX = e.pageX;
     const docY = e.pageY;
-    const { top, left } = e.currentTarget.getBoundingClientRect();
-    const divX = viewportX - left;
-    const divY = viewportY - top;
+    const { top, left, width, height } =
+      e.currentTarget.getBoundingClientRect();
+    const scaleX = e.currentTarget.naturalWidth / width;
+    const scaleY = e.currentTarget.naturalHeight / height;
+
+    const imgX = viewportX - left;
+    const imgY = viewportY - top;
+    const imgOrginalX = Math.round(imgX * scaleX);
+    const imgOrginalY = Math.round(imgY * scaleY);
     const polygon = [
       [939, 499],
       [974, 550],
@@ -30,12 +36,14 @@ const Games = () => {
       [891, 603],
       [907, 553],
     ];
-    const isPointInPolygon = pointInPolygon([divX, divY], polygon);
+    const isPointInPolygon = pointInPolygon([imgX, imgY], polygon);
 
     console.log(`clicked position in viewport: `, {
       viewport: `(${viewportX},${viewportY})`,
       document: `(${docX},${docY})`,
-      div: `(${divX},${divY})`,
+      div: `(${imgX},${imgY})`,
+      scale: `(${scaleX},${scaleY})`,
+      imgOriginal: `(${imgOrginalX},${imgOrginalY})`,
       isPointInPolygon,
     });
   };
