@@ -89,4 +89,23 @@ a {
     font-weight: bold;
     max-width: 4em;
   }
+  .dropdown_button {
+    border: none;
+    transition: all 0.1s ease;
+    padding: var(--spacing);
+    display: flex;
+    gap: 1em;
+    justify-content: space-between;
+    align-items: center;
+
+    @variant hover {
+      background-color: var(--color-zinc-300);
+      color: var(--color-purple-800);
+    }
+  }
+  .dropdown_img {
+    max-height: 3em;
+    min-height: 100%;
+    border-radius: 50%;
+  }
 }
