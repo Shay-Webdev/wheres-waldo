@@ -3,7 +3,8 @@ import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const BASE_DIR = path.join(__dirname, "../..");
+const BASE_DIR = path.join(__dirname, "../..", "public");
+console.log(`base dir in files: `, BASE_DIR);
 
 const waldoPolygon = [
   [1327, 707],
@@ -32,7 +33,7 @@ const randomGuyPolygon = [
 
 const filesPath = {
   WheresWaldo: {
-    imgURL: path.join(BASE_DIR, "waldo-logo.png"),
+    imgURL: path.join(BASE_DIR, "wheres-waldo.jpg"),
     characters: {
       waldo: {
         name: "waldo",

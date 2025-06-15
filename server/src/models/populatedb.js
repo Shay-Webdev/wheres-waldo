@@ -6,6 +6,29 @@ const waldoGameData = filesPath.WheresWaldo;
 const { waldo, beggar, randomGuy } = waldoGameData.characters;
 
 async function main() {
+  try {
+    await prisma.$transaction(async (tx) => {
+      // 1. Delete all records from CharacterCoordinates (child of Character)
+      const deleteCoords = await tx.characterCoordinates.deleteMany({});
+      console.log(
+        `Deleted ${deleteCoords.count} CharacterCoordinates records.`,
+      );
+
+      // 2. Delete all records from Character (child of GameData)
+      const deleteChars = await tx.character.deleteMany({});
+      console.log(`Deleted ${deleteChars.count} Character records.`);
+
+      // 3. Delete all records from GameData (parent table)
+      const deleteGames = await tx.gameData.deleteMany({});
+      console.log(`Deleted ${deleteGames.count} GameData records.`);
+
+      console.log("\nAll data successfully deleted from all tables!");
+    });
+  } catch (error) {
+    console.error("Error deleting all data:", error);
+    // You might want to throw the error to propagate it
+    throw error;
+  }
   await prisma.gameData.create({
     data: {
       name: `Where's Waldo`,
