@@ -16,12 +16,44 @@ const getGameImage: RequestHandler = async (req, res, next) => {
 
   res.sendFile(imgURL as string, (err) => {
     if (err) {
-      console.error(`Error sending file in game: `, err);
-      res.send(`Error sending file: ${err}`);
+      console.error(`Error sending file in game image: `, err);
+      res.json({
+        success: false,
+        message: "Error fetching resource",
+      });
     } else {
       console.log("File sent successfully!");
     }
   });
 };
 
-export { getGameImage };
+const getCharacterLogoImage: RequestHandler = async (req, res, next) => {
+  const characterId = +req.params.characterId;
+  console.log(
+    `characterId in get character logo controller from params: `,
+    characterId,
+  );
+
+  const character = await db.getCharacterById(characterId);
+  if (!character) {
+    res.status(404).json({
+      success: false,
+      message: `Resource not found`,
+    });
+  }
+  const logoURL = character?.LogoURL;
+
+  res.sendFile(logoURL as string, (err) => {
+    if (err) {
+      console.error(`Error sending file in character logo image: `, err);
+      res.json({
+        success: false,
+        message: "Error fetching resource",
+      });
+    } else {
+      console.log("File sent successfully!");
+    }
+  });
+};
+
+export { getGameImage, getCharacterLogoImage };
