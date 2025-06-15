@@ -1,5 +1,7 @@
+import pointInPolygon from "point-in-polygon";
 import type { RequestHandler } from "express";
 import * as db from "../models/queries";
+import { JsonArray, JsonValue } from "@prisma/client/runtime/library";
 
 const getGameDetail: RequestHandler = async (req, res, next) => {
   try {
@@ -109,9 +111,55 @@ const getCharacterLogoImage: RequestHandler = async (req, res, next) => {
   });
 };
 
+const checkClickedCoordinates: RequestHandler = async (req, res, next) => {
+  try {
+    const characterId = +req.params.characterId;
+    console.log(
+      `characterId in check coordinates controller from params: `,
+      characterId,
+    );
+
+    const character = await db.getCharacterById(characterId);
+    if (!character) {
+      res.status(404).json({
+        success: false,
+        message: `Resource not found`,
+      });
+    }
+
+    const clickedCoordinates = req.body.coordinates;
+    const characterCoordinates = character?.CharacterCoordinates
+      ?.coordinates as number[];
+    console.log(`coordinates in check coordinates controller: `, {
+      clickedCoordinates,
+      characterCoordinates,
+    });
+
+    const isCharacterClicked = () => {
+      const isInCharCoord = pointInPolygon(
+        clickedCoordinates,
+        characterCoordinates,
+      );
+      return isInCharCoord;
+    };
+
+    res.json({
+      success: true,
+      data: isCharacterClicked(),
+    });
+  } catch (error) {
+    console.error(`Error fetching data in check coordinates: `, error);
+    res.json({
+      success: false,
+      message: "Error fetching data",
+    });
+  }
+};
+
 export {
   getGameImage,
   getCharacterLogoImage,
   getGameDetail,
   getCharacterDetail,
+  checkClickedCoordinates,
 };
