@@ -1,14 +1,18 @@
 import { Router } from "express";
 import path from "path";
 import {
+  getCharacterDetail,
   getCharacterLogoImage,
+  getGameDetail,
   getGameImage,
 } from "../controllers/gameController";
 
 const router = Router();
 const filePath = path.join(__dirname, "../..", "public", "waldo-logo-3.jpg");
 
+router.route("/:id").get(getGameDetail);
 router.route("/:id/img").get(getGameImage);
-router.route("/:id/character/:characterId").get(getCharacterLogoImage);
+router.route("/:id/character/:characterId/logo").get(getCharacterLogoImage);
+router.route("/:id/character/:characterId").get(getCharacterDetail);
 
 export default router;
