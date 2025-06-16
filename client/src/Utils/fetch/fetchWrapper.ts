@@ -1,3 +1,21 @@
+type CharacterCoordinates = {
+  id: number;
+  characterId: number;
+  coordinates: JSON;
+};
+type Characters = {
+  id: number;
+  gamdeDataId: number;
+  name: string;
+  LogoURL: string;
+  CharacterCoordinates?: CharacterCoordinates | CharacterCoordinates[];
+};
+type GameData = {
+  id: number;
+  imgURL: string;
+  name: string;
+  Character?: Characters | Characters[];
+};
 interface SuccessResponse<T> {
   success: string;
   data: T;
@@ -7,7 +25,10 @@ interface SuccessResponse<T> {
 export type fetchWrapperParam = {
   url: string | URL | globalThis.Request;
   opts?: Omit<RequestInit, "body"> & {
-    body?: BodyInit | Record<string, unknown> | Record<string, unknown>[];
+    body?:
+      | BodyInit
+      | Record<string, unknown | string | number>
+      | Record<string, unknown | string | number>[];
   };
 };
 const fetchWrapper = async (props: fetchWrapperParam) => {
@@ -62,7 +83,9 @@ const fetchWrapper = async (props: fetchWrapperParam) => {
     if (contentType && contentType.includes("application/json")) {
       console.log(`Fetch successfull`);
       const data: SuccessResponse<
-        Record<string, unknown> | Record<string, unknown>[]
+        | GameData
+        | Record<string, unknown | string | number>
+        | Record<string, unknown>[]
       > = await response.json();
       return data;
     } else {
@@ -135,4 +158,13 @@ const putApi = async (props: fetchWrapperParam) => {
   return fetchWrapper(fetchParams);
 };
 
-export { fetchWrapper, getApi, postApi, putApi, deleteApi };
+export {
+  fetchWrapper,
+  getApi,
+  postApi,
+  putApi,
+  deleteApi,
+  type GameData,
+  type Characters,
+  type CharacterCoordinates,
+};

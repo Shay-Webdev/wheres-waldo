@@ -1,20 +1,38 @@
 import { useParams } from "react-router-dom";
 import React, { useEffect, useState } from "react";
-import { games, waldoPolygon } from "../../Utils/Models/data";
+import { waldoPolygon } from "../../Utils/Models/data";
 import pointInPolygon from "point-in-polygon";
 import type { SelectPosType } from "./Utils/types";
 import Dropdown from "./Dropdown/Dropdown";
+import { getServerURL } from "../../Utils/fetch/fetchURL";
+import { getApi } from "../../Utils/fetch/fetchWrapper";
 
 const Games = () => {
   const [gameObj, setGameObj] = useState<
-    undefined | Record<string, string | number | unknown[]>
+    undefined | Record<string, string | number | unknown[] | unknown>
   >(undefined);
+  const [imgURL, setImgURL] = useState<string | undefined>(undefined);
   const params = useParams();
   const [selectPos, setSelectPos] = useState<null | SelectPosType>(null);
 
   useEffect(() => {
-    const newGame = games.find((game) => game.gameId === Number(params.gameId));
-    setGameObj(newGame);
+    try {
+      async function fetchHandler() {
+        // const newGame = games.find(
+        //  (game) => game.gameId === Number(params.gameId),
+        //  );
+        const { gameImage, gameDetail } = getServerURL(Number(params.gameId));
+        const gameData = await getApi({ url: gameDetail });
+
+        console.log(`game detail url in games component: `, gameData);
+        setGameObj(gameData.data as Record<string, unknown>);
+        setImgURL(gameImage);
+      }
+
+      fetchHandler();
+    } catch (error) {
+      console.error(`Error in game : `, error);
+    }
   }, [params]);
 
   const handleClick: React.MouseEventHandler<HTMLImageElement> = (e) => {
@@ -49,16 +67,18 @@ const Games = () => {
     });
   };
   return (
-    <div className="relative">
+    <div className="flex">
       {gameObj === undefined ? (
-        <p>Loading...</p>
+        <p className="justify-self-center self-center font-extrabold text-2xl">
+          Loading...
+        </p>
       ) : (
         <img
           className="bg-zinc-900 cursor-crosshair"
           onClick={handleClick}
-          src={gameObj.imgURL as string}
-          alt={gameObj.imgName as string}
-          key={gameObj.gameId as number}
+          src={imgURL as string}
+          alt={gameObj.name as string}
+          key={gameObj.id as number}
         />
       )}
       {selectPos && <Dropdown selectPos={selectPos} />}
