@@ -1,4 +1,5 @@
 import React, {
+  useContext,
   useEffect,
   useState,
   type Dispatch,
@@ -15,6 +16,7 @@ import {
   type GameData,
 } from "../../../Utils/fetch/fetchWrapper";
 import type { CharactersFound } from "../../../Types/types";
+import { AppContext } from "../../../Utils/contex";
 
 type DropdownProps = {
   selectPos: SelectPosType;
@@ -26,8 +28,7 @@ type DropdownProps = {
 };
 
 const Dropdown = (props: DropdownProps) => {
-  const { selectPos, setIsCoordClicked, selectOriginalPos, setCharacterFound } =
-    props;
+  const { selectPos, setIsCoordClicked, selectOriginalPos } = props;
   //const [gameObj, setGameObj] = useState<
   //  undefined | GameData | Record<string, string | number | unknown[] | unknown>
   //>(undefined);
@@ -37,6 +38,7 @@ const Dropdown = (props: DropdownProps) => {
   const [logoURL, setlogoURL] = useState<string | string[] | undefined>(
     undefined,
   );
+  const { charactersFound, setCharacterFound } = useContext(AppContext);
   const [wrongClick, setWrongClick] = useState(false);
   const params = useParams();
   useEffect(() => {
@@ -120,7 +122,11 @@ const Dropdown = (props: DropdownProps) => {
     >
       <button
         value={characters && characters[0].name}
-        className="dropdown_button hover:dropdown_hover"
+        className={
+          charactersFound[0] === true
+            ? "dropdown_button hover:dropdown_hover  bg-green-400"
+            : "dropdown_button hover:dropdown_hover"
+        }
         onClick={clickHandler}
         id={characters && characters[0].id.toString()}
       >
@@ -133,7 +139,11 @@ const Dropdown = (props: DropdownProps) => {
       </button>
       <button
         value={characters && characters[1].name}
-        className="dropdown_button hover:dropdown_hover"
+        className={
+          charactersFound[1] === true
+            ? "dropdown_button hover:dropdown_hover  bg-green-400"
+            : "dropdown_button hover:dropdown_hover"
+        }
         onClick={clickHandler}
         id={characters && characters[1].id.toString()}
       >
@@ -146,7 +156,11 @@ const Dropdown = (props: DropdownProps) => {
       </button>
       <button
         value={characters && characters[2].name}
-        className="dropdown_button hover:dropdown_hover"
+        className={
+          charactersFound[2] === true
+            ? "dropdown_button hover:dropdown_hover  bg-green-400"
+            : "dropdown_button hover:dropdown_hover"
+        }
         onClick={clickHandler}
         id={characters && characters[2].id.toString()}
       >

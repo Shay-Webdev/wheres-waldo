@@ -1,12 +1,12 @@
 import { useParams } from "react-router-dom";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { waldoPolygon } from "../../Utils/Models/data";
 import pointInPolygon from "point-in-polygon";
 import type { SelectPosType } from "./Utils/types";
 import Dropdown from "./Dropdown/Dropdown";
 import { getServerURL } from "../../Utils/fetch/fetchURL";
 import { getApi } from "../../Utils/fetch/fetchWrapper";
-import type { CharactersFound } from "../../Types/types";
+import { AppContext } from "../../Utils/contex";
 
 const Games = () => {
   const [gameObj, setGameObj] = useState<
@@ -18,11 +18,8 @@ const Games = () => {
   const [selectOriginalPos, setSelectOriginalPos] =
     useState<null | SelectPosType>(null);
   const [isCoordClicked, setIsCoordClicked] = useState<null | boolean>(null);
-  const [charactersFound, setCharacterFound] = useState<CharactersFound>([
-    false,
-    false,
-    false,
-  ]);
+
+  const { charactersFound, setCharacterFound } = useContext(AppContext);
 
   useEffect(() => {
     try {
@@ -57,7 +54,7 @@ const Games = () => {
     if (isCoordClicked) {
       console.log(`Character selcted is true: `, isCoordClicked);
     }
-  }, [selectPos, isCoordClicked]);
+  }, [selectPos, isCoordClicked, charactersFound]);
 
   const handleClick: React.MouseEventHandler<HTMLImageElement> = async (e) => {
     const viewportX = e.clientX;
