@@ -39,7 +39,7 @@ const Dropdown = (props: DropdownProps) => {
     undefined,
   );
   const { charactersFound, setCharacterFound } = useContext(AppContext);
-  const [wrongClick, setWrongClick] = useState(false);
+  const { setWrongClick } = useContext(AppContext);
   const params = useParams();
   useEffect(() => {
     try {

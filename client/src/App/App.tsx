@@ -12,10 +12,18 @@ function App() {
     false,
     false,
   ]);
+  const [wrongClick, setWrongClick] = useState(false);
   return (
     <div className="min-h-screen flex flex-col justify-between text-purple-600 ">
       <main className="flex flex-col min-h-screen bg-zinc-900 ">
-        <AppContext.Provider value={{ charactersFound, setCharacterFound }}>
+        <AppContext.Provider
+          value={{
+            charactersFound,
+            setCharacterFound,
+            wrongClick,
+            setWrongClick,
+          }}
+        >
           <Header />
           <section className="grow">
             <Outlet />

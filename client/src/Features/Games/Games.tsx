@@ -19,7 +19,8 @@ const Games = () => {
     useState<null | SelectPosType>(null);
   const [isCoordClicked, setIsCoordClicked] = useState<null | boolean>(null);
 
-  const { charactersFound, setCharacterFound } = useContext(AppContext);
+  const { wrongClick, charactersFound, setCharacterFound } =
+    useContext(AppContext);
 
   useEffect(() => {
     try {
@@ -91,7 +92,21 @@ const Games = () => {
     });
   };
   return (
-    <div className="flex">
+    <div className="realtive">
+      {wrongClick && selectPos && (
+        <div
+          style={{
+            position: "absolute",
+            left: selectPos && selectPos[0],
+            top: selectPos && selectPos[1],
+            zIndex: 10,
+            backgroundColor: "red",
+            borderWidth: "4px",
+            minWidth: "1em",
+            minHeight: "1em",
+          }}
+        ></div>
+      )}
       {gameObj === undefined ? (
         <p className="justify-self-center self-center font-extrabold text-2xl">
           Loading...
