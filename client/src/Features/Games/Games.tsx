@@ -6,6 +6,7 @@ import type { SelectPosType } from "./Utils/types";
 import Dropdown from "./Dropdown/Dropdown";
 import { getServerURL } from "../../Utils/fetch/fetchURL";
 import { getApi } from "../../Utils/fetch/fetchWrapper";
+import type { CharactersFound } from "../../Types/types";
 
 const Games = () => {
   const [gameObj, setGameObj] = useState<
@@ -17,6 +18,11 @@ const Games = () => {
   const [selectOriginalPos, setSelectOriginalPos] =
     useState<null | SelectPosType>(null);
   const [isCoordClicked, setIsCoordClicked] = useState<null | boolean>(null);
+  const [charactersFound, setCharacterFound] = useState<CharactersFound>([
+    false,
+    false,
+    false,
+  ]);
 
   useEffect(() => {
     try {
@@ -40,10 +46,14 @@ const Games = () => {
 
   useEffect(() => {
     if (selectPos)
-      console.log(`selectted position and character id in games: `, {
-        selectPos,
-        isCoordClicked,
-      });
+      console.log(
+        `selected position and character id & is characters found in games: `,
+        {
+          selectPos,
+          isCoordClicked,
+          charactersFound,
+        },
+      );
     if (isCoordClicked) {
       console.log(`Character selcted is true: `, isCoordClicked);
     }
@@ -103,6 +113,8 @@ const Games = () => {
           selectPos={selectPos}
           setIsCoordClicked={setIsCoordClicked}
           selectOriginalPos={selectOriginalPos}
+          setCharacterFound={setCharacterFound}
+          charactersFound={charactersFound}
         />
       )}
     </div>

@@ -14,16 +14,20 @@ import {
   type fetchWrapperParam,
   type GameData,
 } from "../../../Utils/fetch/fetchWrapper";
+import type { CharactersFound } from "../../../Types/types";
 
 type DropdownProps = {
   selectPos: SelectPosType;
   gameObj?: GameData;
   setIsCoordClicked: Dispatch<SetStateAction<boolean | null>>;
   selectOriginalPos: SelectPosType | null;
+  setCharacterFound: Dispatch<SetStateAction<CharactersFound>>;
+  charactersFound: CharactersFound;
 };
 
 const Dropdown = (props: DropdownProps) => {
-  const { selectPos, setIsCoordClicked, selectOriginalPos } = props;
+  const { selectPos, setIsCoordClicked, selectOriginalPos, setCharacterFound } =
+    props;
   //const [gameObj, setGameObj] = useState<
   //  undefined | GameData | Record<string, string | number | unknown[] | unknown>
   //>(undefined);
@@ -33,6 +37,7 @@ const Dropdown = (props: DropdownProps) => {
   const [logoURL, setlogoURL] = useState<string | string[] | undefined>(
     undefined,
   );
+  const [wrongClick, setWrongClick] = useState(false);
   const params = useParams();
   useEffect(() => {
     try {
@@ -67,11 +72,13 @@ const Dropdown = (props: DropdownProps) => {
   const clickHandler: React.MouseEventHandler<HTMLButtonElement> = async (
     e,
   ) => {
+    const clickedBtnId = e.currentTarget.id;
     const { checkCoordinates } = getServerURL(
       Number(params.gameId),
-      e.currentTarget.id,
+      clickedBtnId,
     );
     console.log(`check coordnates url in dropown: `, checkCoordinates);
+    console.log(`current target id in dropdown button click: `, clickedBtnId);
     const checkCoordinatesProps: fetchWrapperParam = {
       url: checkCoordinates,
       opts: {
@@ -83,6 +90,20 @@ const Dropdown = (props: DropdownProps) => {
 
     const checkCoordResponse = await putApi(checkCoordinatesProps);
     const isCoord = checkCoordResponse.data;
+    if (isCoord && characters) {
+      const characterIndex = characters?.findIndex(
+        (character) => character.id === Number(clickedBtnId),
+      );
+      if (characterIndex !== -1) {
+        setCharacterFound((prevCharacters: CharactersFound) => {
+          const newCharacters: CharactersFound = [...prevCharacters];
+          newCharacters[characterIndex] = true;
+          return newCharacters as CharactersFound;
+        });
+      } else {
+        setWrongClick(true);
+      }
+    }
     setIsCoordClicked(isCoord as boolean);
   };
 

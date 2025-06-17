@@ -1,11 +1,9 @@
-import { z } from "zod";
+type CharactersFound = boolean[];
 
-const cardSchema = z.object({
-  imgURL: z.union([z.string().url(), z.string()]),
-  imgName: z.string(),
-  gameId: z.number(),
-});
+type CardProps = {
+  imgURL: string;
+  imgName: string;
+  gameId: number;
+};
 
-type CardProps = z.infer<typeof cardSchema>;
-
-export { cardSchema, type CardProps };
+export { type CardProps, type CharactersFound };
