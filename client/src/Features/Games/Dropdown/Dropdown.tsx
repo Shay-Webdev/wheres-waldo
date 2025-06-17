@@ -1,4 +1,9 @@
-import { useEffect, useState } from "react";
+import React, {
+  useEffect,
+  useState,
+  type Dispatch,
+  type SetStateAction,
+} from "react";
 import type { SelectPosType } from "../Utils/types";
 import { useParams } from "react-router-dom";
 import { getServerURL } from "../../../Utils/fetch/fetchURL";
@@ -10,10 +15,18 @@ import {
 
 type DropdownProps = {
   selectPos: SelectPosType;
+  gameObj?: GameData;
+  setSelectCharId: Dispatch<SetStateAction<string | number | null>>;
 };
 
 const Dropdown = (props: DropdownProps) => {
-  const { selectPos } = props;
+  const { selectPos, setSelectCharId } = props;
+  const [gameObj, setGameObj] = useState<
+    undefined | GameData | Record<string, string | number | unknown[] | unknown>
+  >(undefined);
+  const [characters, setCharacter] = useState<undefined | Characters[]>(
+    undefined,
+  );
   const [logoURL, setlogoURL] = useState<string | string[] | undefined>(
     undefined,
   );
@@ -37,7 +50,9 @@ const Dropdown = (props: DropdownProps) => {
           characterLogoURLs,
         });
 
+        setGameObj(gameData);
         setlogoURL(characterLogoURLs);
+        setCharacter(characters);
       }
 
       fetchHandler();
@@ -45,31 +60,60 @@ const Dropdown = (props: DropdownProps) => {
       console.error(`Error in game : `, error);
     }
   }, [params]);
+
+  const clickHandler: React.MouseEventHandler<HTMLButtonElement> = (e) => {
+    setSelectCharId(e.currentTarget.id);
+  };
+
   return (
     <div
       style={{
         position: "absolute",
-        left: selectPos.x,
-        top: selectPos.y,
+        left: selectPos && selectPos[0],
+        top: selectPos && selectPos[1],
         zIndex: 10,
       }}
       className="absolute bg-zinc-800  rounded shadow-md z-10  flex flex-col opacity-90"
       id="characters"
     >
-      <button value="waldo" className="dropdown_button hover:dropdown_hover">
-        <img src={logoURL && logoURL[0]} alt="waldo" className="dropdown_img" />
-        Waldo
-      </button>
-      <button value="begger" className="dropdown_button hover:dropdown_hover">
-        <img src={logoURL && logoURL[1]} alt="waldo" className="dropdown_img" />
-        Begger
+      <button
+        value={characters && characters[0].name}
+        className="dropdown_button hover:dropdown_hover"
+        onClick={clickHandler}
+        id={characters && characters[0].id.toString()}
+      >
+        <img
+          src={logoURL && logoURL[0]}
+          alt={characters && characters[0].name}
+          className="dropdown_img"
+        />
+        {characters && characters[0].name}
       </button>
       <button
-        value="random-guy"
+        value={characters && characters[1].name}
         className="dropdown_button hover:dropdown_hover"
+        onClick={clickHandler}
+        id={characters && characters[1].id.toString()}
       >
-        <img src={logoURL && logoURL[2]} alt="waldo" className="dropdown_img" />
-        Random Guy
+        <img
+          src={logoURL && logoURL[1]}
+          alt={characters && characters[1].name}
+          className="dropdown_img"
+        />
+        {characters && characters[1].name}
+      </button>
+      <button
+        value={characters && characters[2].name}
+        className="dropdown_button hover:dropdown_hover"
+        onClick={clickHandler}
+        id={characters && characters[2].id.toString()}
+      >
+        <img
+          src={logoURL && logoURL[2]}
+          alt={characters && characters[2].name}
+          className="dropdown_img"
+        />
+        {characters && characters[2].name}
       </button>
     </div>
   );

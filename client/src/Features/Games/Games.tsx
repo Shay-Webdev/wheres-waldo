@@ -5,7 +5,11 @@ import pointInPolygon from "point-in-polygon";
 import type { SelectPosType } from "./Utils/types";
 import Dropdown from "./Dropdown/Dropdown";
 import { getServerURL } from "../../Utils/fetch/fetchURL";
-import { getApi } from "../../Utils/fetch/fetchWrapper";
+import {
+  getApi,
+  putApi,
+  type fetchWrapperParam,
+} from "../../Utils/fetch/fetchWrapper";
 
 const Games = () => {
   const [gameObj, setGameObj] = useState<
@@ -14,17 +18,20 @@ const Games = () => {
   const [imgURL, setImgURL] = useState<string | undefined>(undefined);
   const params = useParams();
   const [selectPos, setSelectPos] = useState<null | SelectPosType>(null);
+  const [selectChardId, setSelectCharId] = useState<null | string | number>(
+    null,
+  );
 
   useEffect(() => {
     try {
       async function fetchHandler() {
-        // const newGame = games.find(
-        //  (game) => game.gameId === Number(params.gameId),
-        //  );
-        const { gameImage, gameDetail } = getServerURL(Number(params.gameId));
+        const { gameImage, gameDetail, checkCoordinates } = getServerURL(
+          Number(params.gameId),
+          selectChardId as number,
+        );
+        console.log(`urls in games component: `, checkCoordinates);
         const gameData = await getApi({ url: gameDetail });
 
-        console.log(`game detail url in games component: `, gameData);
         setGameObj(gameData.data as Record<string, unknown>);
         setImgURL(gameImage);
       }
@@ -33,9 +40,17 @@ const Games = () => {
     } catch (error) {
       console.error(`Error in game : `, error);
     }
-  }, [params]);
+  }, [params, selectChardId]);
 
-  const handleClick: React.MouseEventHandler<HTMLImageElement> = (e) => {
+  useEffect(() => {
+    if (selectPos || selectChardId)
+      console.log(`selectted position and character id in games: `, {
+        selectPos,
+        selectChardId,
+      });
+  }, [selectPos, selectChardId]);
+
+  const handleClick: React.MouseEventHandler<HTMLImageElement> = async (e) => {
     const viewportX = e.clientX;
     const viewportY = e.clientY;
     const docX = e.pageX;
@@ -54,7 +69,24 @@ const Games = () => {
       waldoPolygon,
     );
 
-    setSelectPos({ x: imgX, y: imgY });
+    setSelectPos([imgX, imgY]);
+    const { checkCoordinates } = getServerURL(
+      Number(params.gameId),
+      selectChardId as number,
+    );
+    const checkCoordinatesProps: fetchWrapperParam = {
+      url: checkCoordinates,
+      opts: {
+        body: {
+          coordinates: selectPos,
+        },
+      },
+    };
+
+    const checkCoordResponse = await putApi(checkCoordinatesProps);
+    const isCoord = checkCoordResponse.data;
+
+    console.log(`is coordinates clicked a character: `, checkCoordResponse);
 
     console.log(`clicked position in viewport: `, {
       viewport: `(${viewportX},${viewportY})`,
@@ -64,6 +96,7 @@ const Games = () => {
       imgOriginal: `(${imgOrginalX},${imgOrginalY})`,
       isPointInPolygon,
       select: selectPos,
+      selectChardId,
     });
   };
   return (
@@ -81,7 +114,9 @@ const Games = () => {
           key={gameObj.id as number}
         />
       )}
-      {selectPos && <Dropdown selectPos={selectPos} />}
+      {selectPos && (
+        <Dropdown selectPos={selectPos} setSelectCharId={setSelectCharId} />
+      )}
     </div>
   );
 };

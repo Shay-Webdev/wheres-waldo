@@ -13,6 +13,8 @@ const getServerURL = (id?: number | string, characterId?: string | number) => {
     gameImage: serverURLOrigin + `/${id}/img`,
     characterLogo: serverURLOrigin + `/${id}/character/${characterId}/logo`,
     characterDetail: serverURLOrigin + `/${id}/character/${characterId}`,
+    checkCoordinates:
+      serverURLOrigin + `/${id}/character/${characterId}/check_coordinates`,
   };
 };
 
