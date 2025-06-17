@@ -84,6 +84,7 @@ const fetchWrapper = async (props: fetchWrapperParam) => {
       console.log(`Fetch successfull`);
       const data: SuccessResponse<
         | GameData
+        | boolean
         | Record<string, unknown | string | number>
         | Record<string, unknown>[]
       > = await response.json();

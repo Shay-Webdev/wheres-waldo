@@ -5,11 +5,7 @@ import pointInPolygon from "point-in-polygon";
 import type { SelectPosType } from "./Utils/types";
 import Dropdown from "./Dropdown/Dropdown";
 import { getServerURL } from "../../Utils/fetch/fetchURL";
-import {
-  getApi,
-  putApi,
-  type fetchWrapperParam,
-} from "../../Utils/fetch/fetchWrapper";
+import { getApi } from "../../Utils/fetch/fetchWrapper";
 
 const Games = () => {
   const [gameObj, setGameObj] = useState<
@@ -18,18 +14,18 @@ const Games = () => {
   const [imgURL, setImgURL] = useState<string | undefined>(undefined);
   const params = useParams();
   const [selectPos, setSelectPos] = useState<null | SelectPosType>(null);
-  const [selectChardId, setSelectCharId] = useState<null | string | number>(
-    null,
-  );
+  const [selectOriginalPos, setSelectOriginalPos] =
+    useState<null | SelectPosType>(null);
+  const [isCoordClicked, setIsCoordClicked] = useState<null | boolean>(null);
 
   useEffect(() => {
     try {
       async function fetchHandler() {
-        const { gameImage, gameDetail, checkCoordinates } = getServerURL(
-          Number(params.gameId),
-          selectChardId as number,
-        );
-        console.log(`urls in games component: `, checkCoordinates);
+        const { gameImage, gameDetail } = getServerURL(Number(params.gameId));
+        console.log(`urls in games component: `, {
+          gameImage,
+          gameDetail,
+        });
         const gameData = await getApi({ url: gameDetail });
 
         setGameObj(gameData.data as Record<string, unknown>);
@@ -40,15 +36,18 @@ const Games = () => {
     } catch (error) {
       console.error(`Error in game : `, error);
     }
-  }, [params, selectChardId]);
+  }, [params]);
 
   useEffect(() => {
-    if (selectPos || selectChardId)
+    if (selectPos)
       console.log(`selectted position and character id in games: `, {
         selectPos,
-        selectChardId,
+        isCoordClicked,
       });
-  }, [selectPos, selectChardId]);
+    if (isCoordClicked) {
+      console.log(`Character selcted is true: `, isCoordClicked);
+    }
+  }, [selectPos, isCoordClicked]);
 
   const handleClick: React.MouseEventHandler<HTMLImageElement> = async (e) => {
     const viewportX = e.clientX;
@@ -70,23 +69,9 @@ const Games = () => {
     );
 
     setSelectPos([imgX, imgY]);
-    const { checkCoordinates } = getServerURL(
-      Number(params.gameId),
-      selectChardId as number,
-    );
-    const checkCoordinatesProps: fetchWrapperParam = {
-      url: checkCoordinates,
-      opts: {
-        body: {
-          coordinates: selectPos,
-        },
-      },
-    };
+    setSelectOriginalPos([imgOrginalX, imgOrginalY]);
 
-    const checkCoordResponse = await putApi(checkCoordinatesProps);
-    const isCoord = checkCoordResponse.data;
-
-    console.log(`is coordinates clicked a character: `, checkCoordResponse);
+    console.log(`is coordinates clicked a character: `, isCoordClicked);
 
     console.log(`clicked position in viewport: `, {
       viewport: `(${viewportX},${viewportY})`,
@@ -96,7 +81,6 @@ const Games = () => {
       imgOriginal: `(${imgOrginalX},${imgOrginalY})`,
       isPointInPolygon,
       select: selectPos,
-      selectChardId,
     });
   };
   return (
@@ -115,7 +99,11 @@ const Games = () => {
         />
       )}
       {selectPos && (
-        <Dropdown selectPos={selectPos} setSelectCharId={setSelectCharId} />
+        <Dropdown
+          selectPos={selectPos}
+          setIsCoordClicked={setIsCoordClicked}
+          selectOriginalPos={selectOriginalPos}
+        />
       )}
     </div>
   );

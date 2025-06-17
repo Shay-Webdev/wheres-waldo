@@ -9,21 +9,24 @@ import { useParams } from "react-router-dom";
 import { getServerURL } from "../../../Utils/fetch/fetchURL";
 import {
   getApi,
+  putApi,
   type Characters,
+  type fetchWrapperParam,
   type GameData,
 } from "../../../Utils/fetch/fetchWrapper";
 
 type DropdownProps = {
   selectPos: SelectPosType;
   gameObj?: GameData;
-  setSelectCharId: Dispatch<SetStateAction<string | number | null>>;
+  setIsCoordClicked: Dispatch<SetStateAction<boolean | null>>;
+  selectOriginalPos: SelectPosType | null;
 };
 
 const Dropdown = (props: DropdownProps) => {
-  const { selectPos, setSelectCharId } = props;
-  const [gameObj, setGameObj] = useState<
-    undefined | GameData | Record<string, string | number | unknown[] | unknown>
-  >(undefined);
+  const { selectPos, setIsCoordClicked, selectOriginalPos } = props;
+  //const [gameObj, setGameObj] = useState<
+  //  undefined | GameData | Record<string, string | number | unknown[] | unknown>
+  //>(undefined);
   const [characters, setCharacter] = useState<undefined | Characters[]>(
     undefined,
   );
@@ -50,7 +53,7 @@ const Dropdown = (props: DropdownProps) => {
           characterLogoURLs,
         });
 
-        setGameObj(gameData);
+        // setGameObj(gameData);
         setlogoURL(characterLogoURLs);
         setCharacter(characters);
       }
@@ -61,8 +64,26 @@ const Dropdown = (props: DropdownProps) => {
     }
   }, [params]);
 
-  const clickHandler: React.MouseEventHandler<HTMLButtonElement> = (e) => {
-    setSelectCharId(e.currentTarget.id);
+  const clickHandler: React.MouseEventHandler<HTMLButtonElement> = async (
+    e,
+  ) => {
+    const { checkCoordinates } = getServerURL(
+      Number(params.gameId),
+      e.currentTarget.id,
+    );
+    console.log(`check coordnates url in dropown: `, checkCoordinates);
+    const checkCoordinatesProps: fetchWrapperParam = {
+      url: checkCoordinates,
+      opts: {
+        body: {
+          coordinates: selectOriginalPos,
+        },
+      },
+    };
+
+    const checkCoordResponse = await putApi(checkCoordinatesProps);
+    const isCoord = checkCoordResponse.data;
+    setIsCoordClicked(isCoord as boolean);
   };
 
   return (
