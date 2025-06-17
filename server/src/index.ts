@@ -9,9 +9,19 @@ const app = express();
 const clientURL = process.env.CLIENT_URL;
 const port = process.env.PORT || 3000;
 
+console.log(`client url in server: `, clientURL);
 app.use(
   cors({
-    origin: clientURL,
+    origin: (origin, callback) => {
+      if (!origin) {
+        return callback(null, true);
+      }
+      if (origin === clientURL) {
+        return callback(null, true);
+      }
+      return callback(new Error("CORS error: unauthorized origin"));
+    },
+    allowedHeaders: ["Content-Type", "Authorization"],
   }),
 );
 app.use(express.json());

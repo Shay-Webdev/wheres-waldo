@@ -1,7 +1,29 @@
 import pointInPolygon from "point-in-polygon";
 import type { RequestHandler } from "express";
 import * as db from "../models/queries";
-import { JsonArray, JsonValue } from "@prisma/client/runtime/library";
+
+const getAllGame: RequestHandler = async (req, res, next) => {
+  try {
+    const gameData = await db.getallGameData();
+    if (!gameData) {
+      res.status(404).json({
+        success: false,
+        message: `Resource not found`,
+      });
+    }
+    console.log(`game data in get all game data controller: `, gameData);
+    res.json({
+      success: true,
+      data: gameData,
+    });
+  } catch (error) {
+    console.error(`Error fetching data: `, error);
+    res.json({
+      success: false,
+      message: "Error fetching data",
+    });
+  }
+};
 
 const getGameDetail: RequestHandler = async (req, res, next) => {
   try {
@@ -113,7 +135,7 @@ const getCharacterLogoImage: RequestHandler = async (req, res, next) => {
 
 const checkClickedCoordinates: RequestHandler = async (req, res, next) => {
   try {
-    const characterId = +req.params.characterId;
+    const characterId = Number(req.params.characterId);
     console.log(
       `characterId in check coordinates controller from params: `,
       characterId,
@@ -130,10 +152,6 @@ const checkClickedCoordinates: RequestHandler = async (req, res, next) => {
     const clickedCoordinates = req.body.coordinates;
     const characterCoordinates = character?.CharacterCoordinates
       ?.coordinates as number[];
-    console.log(`coordinates in check coordinates controller: `, {
-      clickedCoordinates,
-      characterCoordinates,
-    });
 
     const isCharacterClicked = () => {
       const isInCharCoord = pointInPolygon(
@@ -143,6 +161,11 @@ const checkClickedCoordinates: RequestHandler = async (req, res, next) => {
       return isInCharCoord;
     };
 
+    console.log(`coordinates in check coordinates controller: `, {
+      clickedCoordinates,
+      characterCoordinates,
+      isCharacterClicked: isCharacterClicked(),
+    });
     res.json({
       success: true,
       data: isCharacterClicked(),
@@ -162,4 +185,5 @@ export {
   getGameDetail,
   getCharacterDetail,
   checkClickedCoordinates,
+  getAllGame,
 };

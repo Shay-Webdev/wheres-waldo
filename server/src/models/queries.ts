@@ -4,7 +4,7 @@ const prisma = new PrismaClient();
 
 const getGameDataById = async (id: number) => {
   try {
-    const gameData = prisma.gameData.findUnique({
+    const gameData = await prisma.gameData.findUnique({
       where: {
         id,
       },
@@ -34,7 +34,7 @@ const getCharacterById = async (id: number) => {
 
 const getAllCharacters = async (gameDataId: number) => {
   try {
-    const characters = prisma.character.findMany({
+    const characters = await prisma.character.findMany({
       where: { gameDataId },
       include: { CharacterCoordinates: true },
     });
@@ -47,7 +47,7 @@ const getAllCharacters = async (gameDataId: number) => {
 
 const getallGameData = async () => {
   try {
-    const gameData = prisma.gameData.findMany();
+    const gameData = await prisma.gameData.findMany({});
     return gameData;
   } catch (error) {
     console.log(`Error fetching games data: `, error);
